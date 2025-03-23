@@ -1,5 +1,14 @@
 from rest_framework.permissions import BasePermission
-from .models import Subject
+from .models import Subject , Lesson
+
+class CanViewLesson(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.role == 'teacher':
+            return obj.subject.teacher == user
+        if user.role == 'student':
+            return obj.subject.grade == user.grade
+        return False
 
 class IsTeacher(BasePermission):
     def has_permission(self, request, view):

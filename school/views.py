@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
-from .permissions import IsStudent, IsTeacher, CanCreateLesson
+from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson
 
 
 class StudentDetailView(generics.RetrieveAPIView):
@@ -25,8 +25,8 @@ class Lessons(generics.RetrieveAPIView):
 class LessonDetailView(generics.RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated] # add permission to make sure that this student can c this lesson 
-
+    permission_classes = [permissions.IsAuthenticated , CanViewLesson] # add permission to make sure that this student can c this lesson 
+    
 
 class TeacherSubjectsView(generics.ListAPIView):  # test this API
     serializer_class = SubjectSerializer
