@@ -28,7 +28,7 @@ class LessonDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated , CanViewLesson] # add permission to make sure that this student can c this lesson 
     
 
-class TeacherSubjectsView(generics.ListAPIView):  # test this API
+class TeacherSubjectsView(generics.ListAPIView): # test this API
     serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
@@ -39,7 +39,8 @@ class TeacherSubjectsView(generics.ListAPIView):  # test this API
         return queryset
 
 
-class CreateLessonView(generics.CreateAPIView):
+
+class CreateLessonView(generics.CreateAPIView): 
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated, CanCreateLesson]
 

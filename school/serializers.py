@@ -7,20 +7,28 @@ class GradeSerializer(serializers.ModelSerializer):
         model = Grade
         fields = ['id', 'name']
 
-
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'school_id','email', 'profile_picture']
+        
+        
 class SubjectSerializer(serializers.ModelSerializer):
+    teacher = TeacherSerializer()
+
     class Meta:
         model = Subject
-        fields = ['id', 'name', 'description', 'grade']
+        fields = [ 'teacher' , 'id', 'name', 'description', 'grade' ]
 
 
 class StudentSerializer(serializers.ModelSerializer):
     grade = GradeSerializer()
     subjects = SubjectSerializer(many=True, source='grade.subject_set')
 
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'school_id', 'role', 'grade', 'subjects']
+        fields = ['id', 'email', 'username', 'profile_picture' , 'school_id', 'role', 'grade', 'subjects']
 
 
 class LessonSerializer(serializers.ModelSerializer):
