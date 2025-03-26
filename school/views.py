@@ -2,6 +2,12 @@ from rest_framework import generics, permissions, serializers
 from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .tasks import add_numbers, speech_rec
+from django_celery_results.models import TaskResult
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
 from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson
@@ -81,4 +87,36 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     Custom JWT login view to authenticate using email or school_id.
     """
     serializer_class = CustomTokenObtainPairSerializer
+
+
+def trigger_add(request):
+    task = add_numbers.delay(10, 5)
+    return JsonResponse({'task_id': task.id})
+
+class trigger_speech_rec(APIView):
+
+    # authentication_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, pk, format=None):
+        """
+        Return a list of all users.
+        """
+        lesson = get_object_or_404(Lesson, pk=pk)
+        task = speech_rec.delay(lesson.id)
+        return JsonResponse({'task_id': task.id})
+
+
+
+def get_result(request, task_id):
+    try:
+        task = TaskResult.objects.get(task_id=task_id)
+        return JsonResponse({
+            "status": task.status,
+            "result": task.result
+        })
+    except TaskResult.DoesNotExist:
+        return JsonResponse({"error": "Task ID not found"}, status=404)
+
+
 

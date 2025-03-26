@@ -49,6 +49,7 @@ class Lesson(models.Model):
     file_audio = models.FileField(upload_to='lessons/audios/', blank=True, null=True)
     video = models.FileField(upload_to='lessons/videos/', blank=True, null=True)
     subject = models.ForeignKey(Subject , on_delete=models.PROTECT , related_name="lessons")
+    audio_file_transcribe = models.FileField(upload_to='lessons/transcribe/', blank=True, null=True)
     def __str__(self):
         return self.name
 

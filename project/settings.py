@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'school',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -150,3 +151,8 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# CELERY SETTINGS
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'default'
