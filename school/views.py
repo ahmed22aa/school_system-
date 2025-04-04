@@ -1,4 +1,6 @@
-from rest_framework import generics, permissions, serializers
+from django.conf import settings
+import requests
+from rest_framework import generics, permissions, serializers , status
 from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -10,7 +12,42 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
-from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson
+from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson , CanProcessLesson
+from rest_framework.permissions import IsAuthenticated
+
+
+
+class ProcessLessonView(APIView):
+    permission_classes = [IsAuthenticated, CanProcessLesson]
+
+    def get(self, request, lesson_id):
+        try:
+            lesson = Lesson.objects.get(id=lesson_id)
+
+            if lesson.processed:
+                return Response({"message": "Lesson already processed"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not lesson.file_text:
+                return Response({"error": "No file associated with this lesson"}, status=status.HTTP_400_BAD_REQUEST)
+
+            rag_system_url = "http://127.0.0.1:8000/api/test-process/"
+
+            
+            payload = {"lesson_id": lesson.id}
+            files = {"file": lesson.file_text}  
+
+            response = requests.post(rag_system_url, dat=payload, files=files)
+            print(response.status_code,"####################################")
+            if response.status_code == 200:
+                lesson.processed = True
+                lesson.save()
+                return Response({"message": "Lesson processed successfully"}, status=status.HTTP_200_OK)
+
+            return Response({"error": "Failed to process lesson"}, status=response.status_code)
+
+        except Exception as e:
+            print(e)
+            return Response({"error": "Lesson not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class StudentDetailView(generics.RetrieveAPIView):
@@ -118,6 +155,19 @@ def get_result(request, task_id):
         })
     except TaskResult.DoesNotExist:
         return JsonResponse({"error": "Task ID not found"}, status=404)
+    
+    
+class testLessonView(APIView):
+    def post(self, request):
+        print("STAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAART")
+        lesson_id = request.data.get("lesson_id")
 
 
+        if not lesson_id :
+            return Response({"error": "Missing lesson_id or file"}, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response({"message": "File received successfully", "lesson_id": lesson_id}, status=status.HTTP_200_OK)
+
+
+    def get(self,request):
+        return Response({"message":"hi"})

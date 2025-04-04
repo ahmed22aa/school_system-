@@ -156,3 +156,6 @@ SIMPLE_JWT = {
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
+
+
+# rag_system_url = "http://127.0.0.1:8000/api/mock-process/"

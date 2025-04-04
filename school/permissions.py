@@ -28,3 +28,13 @@ class CanCreateLesson(BasePermission):
             request.user.role == 'teacher' and
             Subject.objects.filter(id=subject_id, teacher=request.user).exists()
         )
+        
+
+class CanProcessLesson(BasePermission):
+    def has_permission(self, request, view):
+        if not (request.user.is_authenticated and request.user.role == 'teacher'):
+            return False
+
+        lesson_id = view.kwargs.get('lesson_id')
+
+        return Lesson.objects.filter(id=lesson_id, subject__teacher=request.user).exists()
