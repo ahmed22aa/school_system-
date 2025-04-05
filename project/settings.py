@@ -159,3 +159,11 @@ CELERY_CACHE_BACKEND = 'default'
 
 
 # rag_system_url = "http://127.0.0.1:8000/api/mock-process/"
+
+
+
+# LOGIN_REDIRECT_URL = '/student/detail/'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  
+)

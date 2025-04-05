@@ -36,7 +36,7 @@ class CustomUser(AbstractUser):
 class Subject(models.Model):
     name = models.CharField(max_length=85)
     description = models.TextField()
-    grade = models.ForeignKey(Grade, on_delete=models.PROTECT)
+    grade = models.ForeignKey(Grade, on_delete=models.PROTECT , related_name="subjects_grades")
     teacher = models.ForeignKey(CustomUser , on_delete=models.PROTECT , related_name="subjects")
     def __str__(self):
         return self.name

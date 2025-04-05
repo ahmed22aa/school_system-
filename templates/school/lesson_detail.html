@@ -1,0 +1,20 @@
+{% extends 'school/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ lesson.name }}</h1>
+  <p><strong>Description:</strong> {{ lesson.description }}</p>
+  <p><strong>Subject:</strong> {{ subject_name }}</p>
+  
+  {% if lesson.file_text %}
+    <p><strong>Text File:</strong> <a href="{{ lesson.file_text.url }}">Download</a></p>
+  {% endif %}
+  
+  {% if lesson.file_audio %}
+    <p><strong>Audio File:</strong> <a href="{{ lesson.file_audio.url }}">Download</a></p>
+  {% endif %}
+  
+  {% if lesson.video %}
+    <p><strong>Video:</strong> <a href="{{ lesson.video.url }}">Watch</a></p>
+  {% endif %}
+  
+{% endblock %}

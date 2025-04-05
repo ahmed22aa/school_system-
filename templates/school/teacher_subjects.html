@@ -1,0 +1,19 @@
+{% extends 'school/base_generic.html' %}
+
+{% block content %}
+  <h1>Subjects Taught by {{ teacher.username }}</h1>
+
+  {% if subjects %}
+    <ul>
+      {% for subject in subjects %}
+        <li>
+          <strong>{{ subject.name }}</strong><br>
+          <p>{{ subject.description }}</p>
+          <p><strong>Grade:</strong> {{ subject.grade.name }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You are not teaching any subjects at the moment.</p>
+  {% endif %}
+{% endblock %}
