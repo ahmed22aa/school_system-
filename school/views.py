@@ -222,7 +222,7 @@ class CreateLessonView(generics.CreateAPIView):
     
     
 class ProcessLessonView(APIView):
-    permission_classes = [IsAuthenticated, CanProcessLesson]
+    permission_classes = [permissions.IsAuthenticated, CanProcessLesson]
 
     def get(self, request, lesson_id):
         try:
