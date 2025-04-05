@@ -13,12 +13,10 @@ from django.http import JsonResponse
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
 from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson , CanProcessLesson
-from rest_framework.permissions import IsAuthenticated
-
 
 
 class ProcessLessonView(APIView):
-    permission_classes = [IsAuthenticated, CanProcessLesson]
+    permission_classes = [permissions.IsAuthenticated, CanProcessLesson]
 
     def get(self, request, lesson_id):
         try:
