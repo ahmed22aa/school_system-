@@ -1,0 +1,18 @@
+{% extends 'school/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ subject.name }}</h1>
+  <p><strong>Description:</strong> {{ subject.description }}</p>
+  <p><strong>Grade:</strong> {{ grade.name }}</p>
+
+  <h2>Lessons</h2>
+  {% if lessons %}
+    <ul>
+      {% for lesson in lessons %}
+        <li>{{ lesson.name }}: {{ lesson.description }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No lessons available for this subject.</p>
+  {% endif %}
+{% endblock %}

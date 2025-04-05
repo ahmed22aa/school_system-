@@ -1,0 +1,19 @@
+
+{% extends 'school/base_generic.html' %}
+
+{% block content %}
+  <h1>Student Details</h1>
+  
+  <p><strong>Name:</strong> {{ student.username }}</p>
+  <p><strong>Email:</strong> {{ student.email }}</p>
+  <p><strong>Grade:</strong> {{ grade.name }}</p>
+
+  <h2>Subjects for {{ grade.name }}:</h2>
+  <ul>
+    {% for subject in subjects %}
+      <li>{{ subject.name }} - {{ subject.description }}</li>
+    {% empty %}
+      <li>No subjects found for this grade.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

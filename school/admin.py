@@ -10,6 +10,7 @@ from django.db import transaction
 import pandas as pd
 
 
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser

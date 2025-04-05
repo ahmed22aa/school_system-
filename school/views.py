@@ -12,10 +12,18 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
-from .permissions import IsStudent, IsTeacher, CanCreateLesson , CanViewLesson , CanProcessLesson
+from .permissions import check_student_permission,  CanCreateLesson , CanViewLesson , CanProcessLesson , check_teacher_permission , check_user_permission
 from rest_framework.permissions import IsAuthenticated
-
-
+from django.shortcuts import render
+from django.views.generic import DetailView , TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Lesson, Subject
+from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from .forms import LoginForm
+from django.http import HttpResponseForbidden
 
 class ProcessLessonView(APIView):
     permission_classes = [IsAuthenticated, CanProcessLesson]
@@ -50,36 +58,121 @@ class ProcessLessonView(APIView):
             return Response({"error": "Lesson not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class StudentDetailView(generics.RetrieveAPIView):
-    serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsStudent]
-
-    def get_object(self):
-        return self.request.user
 
 
-class Lessons(generics.RetrieveAPIView):
-    queryset = Subject.objects.all()
-    serializer_class = SubjectDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    lookup_field = "id"  
+class StudentDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'school/student_detail.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        permission_response = check_student_permission(self.request.user)
+        if permission_response:
+            return permission_response  
+        
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        student = self.request.user
+        grade = student.grade
+        subjects = Subject.objects.filter(grade=grade)
+
+        context.update({
+            'student': student,
+            'grade': grade,
+            'subjects': subjects
+        })
+        
+        return context
 
 
-class LessonDetailView(generics.RetrieveAPIView):
-    queryset = Lesson.objects.all()
-    serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated , CanViewLesson] # add permission to make sure that this student can c this lesson 
-    
 
-class TeacherSubjectsView(generics.ListAPIView): # test this API
-    serializer_class = SubjectSerializer
-    permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
-    def get_queryset(self):
-        queryset = Subject.objects.filter(teacher=self.request.user)
-        if not queryset.exists():
-            raise NotFound(detail="No subjects found for this teacher.")
-        return queryset
+
+
+class SubjectDetailView(DetailView, LoginRequiredMixin):
+    model = Subject
+    template_name = 'school/subject_detail.html'
+    context_object_name = 'subject'
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        subject = self.get_object()
+
+        
+        permission_error = check_user_permission(request.user, subject.id)
+        if permission_error:
+            return HttpResponseForbidden("You are not authorized to be here.")  
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subject = context['subject']
+
+        
+        context['grade'] = subject.grade
+        context['lessons'] = subject.lessons.all()
+
+        return context
+
+
+
+
+
+
+class LessonDetailView(DetailView, LoginRequiredMixin):
+    model = Lesson
+    template_name = 'school/lesson_detail.html'
+    context_object_name = 'lesson'
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        lesson = self.get_object()
+
+        
+        permission_error = check_user_permission(request.user, lesson.subject.id)
+        if permission_error:
+            return HttpResponseForbidden("You are not authorized to be here.")  
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lesson = self.get_object()
+
+        subject = lesson.subject
+
+        
+        context['subject'] = subject
+        context['subject_name'] = subject.name
+
+        return context
+
+
+class TeacherSubjectsView(LoginRequiredMixin, TemplateView):
+    template_name = 'school/teacher_subjects.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        permission_response = check_teacher_permission(self.request.user)
+        if permission_response:
+            return permission_response
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = self.request.user
+        
+        subjects = Subject.objects.filter(teacher=teacher)
+        
+        context.update({
+            'teacher': teacher,
+            'subjects': subjects,
+        })
+        
+        return context
 
 
 
@@ -171,3 +264,34 @@ class testLessonView(APIView):
 
     def get(self,request):
         return Response({"message":"hi"})
+class LoginView(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(request, 'school/login.html', {'form': form})
+
+    def post(self, request):
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+
+            
+            user = authenticate(username=email, password=password)
+
+            if user is not None:
+                login(request, user)
+
+                
+                if user.role == 'teacher':
+                    return redirect('teacher-subjects')  
+                elif user.role == 'student':
+                    return redirect('student_detail')  
+                else:
+                    messages.error(request, 'Invalid role assigned to user.')
+                    return redirect('login')  
+            else:
+                messages.error(request, 'Invalid email or password.')
+                return redirect('login')  
+
+        
+        return render(request, 'school/login.html', {'form': form})
