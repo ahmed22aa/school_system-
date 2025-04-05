@@ -14,21 +14,20 @@ class TeacherSerializer(serializers.ModelSerializer):
         
         
 class SubjectSerializer(serializers.ModelSerializer):
-    teacher = TeacherSerializer()
-
     class Meta:
         model = Subject
-        fields = [ 'teacher' , 'id', 'name', 'description', 'grade' ]
+        fields = ['id', 'name', 'description', 'grade']
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    grade = GradeSerializer()
-    subjects = SubjectSerializer(many=True, source='grade.subject_set')
-
+    grade = GradeSerializer()  
+    subjects = SubjectSerializer(many=True, source='grade.subjects_grades')  
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'profile_picture' , 'school_id', 'role', 'grade', 'subjects']
+        fields = ['id', 'email', 'username', 'profile_picture', 'school_id', 'role', 'grade', 'subjects']
+
+
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -39,7 +38,8 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ['id', 'name', 'description', 'file_text', 'file_audio', 'video', 'subject_id', 'subject_name']
+        fields = ['id', 'name', 'description', 'file_text', 'file_audio', 'video', 'subject', 'subject_name']  
+
         
 class SubjectDetailSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True)

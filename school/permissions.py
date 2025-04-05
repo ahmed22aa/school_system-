@@ -1,15 +1,25 @@
 from rest_framework.permissions import BasePermission
 from .models import Subject , Lesson
 from django.http import HttpResponseForbidden
-class CanViewLesson(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        user = request.user
-        if user.role == 'teacher':
-            return obj.subject.teacher == user
-        if user.role == 'student':
-            return obj.subject.grade == user.grade
-        return False
 
+
+
+def check_user_permission(user, subject_id):
+    
+    subject = Subject.objects.filter(id=subject_id).first()
+
+    if not subject:
+        return HttpResponseForbidden("Subject not found.")
+
+   
+    if subject.teacher == user:
+        return None  
+
+    
+    if user.role == 'student' and subject.grade == user.grade:
+        return None  
+
+    return HttpResponseForbidden("You do not have permission to view this subject.")
 
 
 def check_student_permission(user):
@@ -24,6 +34,15 @@ def check_teacher_permission(user):
     return None
 
 
+# APIS
+
+class IsStudent(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'student'
+
+class IsTeacher(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'teacher'
 
 class CanCreateLesson(BasePermission):
     def has_permission(self, request, view):
@@ -46,20 +65,45 @@ class CanProcessLesson(BasePermission):
     
     
     
-    
-def check_user_permission(user, subject_id):
-    
-    subject = Subject.objects.filter(id=subject_id).first()
+class CanViewLesson(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.role == 'teacher':
+            return obj.subject.teacher == user
+        if user.role == 'student':
+            return obj.subject.grade == user.grade
+        return False    
 
-    if not subject:
-        return HttpResponseForbidden("Subject not found.")
 
-   
-    if subject.teacher == user:
-        return None  
 
-    
-    if user.role == 'student' and subject.grade == user.grade:
-        return None  
+from rest_framework.permissions import BasePermission
+from django.http import HttpResponseForbidden
+from .models import Subject
 
-    return HttpResponseForbidden("You do not have permission to view this subject.")
+class UserCheckPermission(BasePermission):
+    """
+    Custom permission to allow access based on user role (teacher or student)
+    and their relationship with the subject (teacher of the subject or student in the grade).
+    """
+
+    def has_permission(self, request, view):
+        
+        subject_id = view.kwargs.get("pk")  
+        if not subject_id:
+            return False  
+        
+        
+        subject = Subject.objects.filter(id=subject_id).first()
+        if not subject:
+            return False  
+        
+        
+        if subject.teacher == request.user:
+            return True  
+        
+        
+        if request.user.role == 'student' and subject.grade == request.user.grade:
+            return True  
+        
+        
+        return False
