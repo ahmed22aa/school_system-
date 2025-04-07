@@ -1,4 +1,3 @@
-from django.conf import settings
 import requests
 from rest_framework import generics, permissions, serializers , status
 from rest_framework.exceptions import NotFound
@@ -12,8 +11,9 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import CustomUser, Subject, Lesson
 from .serializers import StudentSerializer, SubjectSerializer, LessonSerializer, SubjectDetailSerializer
-from .permissions import check_student_permission,  CanCreateLesson , CanViewLesson , CanProcessLesson , check_teacher_permission , check_user_permission , \
-    IsTeacher , IsStudent , UserCheckPermission
+from .permissions import check_student_permission,  CanCreateLesson , CanViewLesson , CanProcessLesson , \
+check_teacher_permission , check_user_permission , \
+    IsTeacher , IsStudent , UserCheckPermission , check_Can_Create_Lesson
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import render
 from django.views.generic import DetailView , TemplateView
@@ -23,10 +23,10 @@ from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from .forms import LoginForm
+from .forms import LoginForm, LessonForm
 from django.http import HttpResponseForbidden
-
-
+from django.contrib.auth import logout
+from django.conf import settings
 
 
 
@@ -136,22 +136,25 @@ class TeacherSubjects(LoginRequiredMixin, TemplateView):
         
         return context
 
-
-
 class LoginView(View):
     def get(self, request):
-        form = LoginForm()
-        return render(request, 'school/login.html', {'form': form})
+        return render(request, 'school/login.html')
 
     def post(self, request):
+        print(request.POST)
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            email = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
             
-            user = authenticate(username=email, password=password)
+            user = CustomUser.objects.filter(email=email).first() or \
+               CustomUser.objects.filter(school_id=email).first()
 
+            if user is None or not user.check_password(password):
+                messages.error(request, 'Invalid email or password.')
+                return redirect('login') 
+            
             if user is not None:
                 login(request, user)
 
@@ -166,9 +169,45 @@ class LoginView(View):
             else:
                 messages.error(request, 'Invalid email or password.')
                 return redirect('login')  
-
-        
         return render(request, 'school/login.html', {'form': form})
+
+class LessonCreateView(View , LoginRequiredMixin):
+    def get(self, request, subject_id):
+        permission_error = check_Can_Create_Lesson(request.user, subject_id)
+        if permission_error:
+            return permission_error
+        subject = get_object_or_404(Subject, pk=subject_id)
+        return render(request, 'school/create_lesson.html', {'subject': subject})
+
+    def post(self, request, subject_id):
+        permission_error = check_Can_Create_Lesson(request.user, subject_id)
+        if permission_error:
+            return permission_error
+        subject = get_object_or_404(Subject, pk=subject_id)
+        form = LessonForm(request.POST, request.FILES)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.subject = subject
+            lesson.save()
+            return redirect('subject_detail', subject_id)
+        return render(request, 'school/create_lesson.html', {'subject': subject})
+    
+class LessonDeleteView(View , LoginRequiredMixin):
+    def post(self, request, pk):
+        permission_error = check_Can_Create_Lesson(request.user, subject_id)
+        if permission_error:
+            return permission_error
+        lesson = get_object_or_404(Lesson, pk=pk)
+        if request.user.role != "teacher":
+            return redirect('lesson_detail', pk=pk)
+        subject_id = lesson.subject.id
+        lesson.delete()
+        return redirect('subject_detail', subject_id)
+    
+def custom_logout_view(request):
+    logout(request)
+    return redirect('login')
+
     
 # APIS
 
@@ -222,7 +261,7 @@ class CreateLessonView(generics.CreateAPIView):
     
     
 class ProcessLessonView(APIView):
-    permission_classes = [permissions.IsAuthenticated, CanProcessLesson]
+    #permission_classes = [permissions.IsAuthenticated, CanProcessLesson]
 
     def get(self, request, lesson_id):
         try:
@@ -233,14 +272,11 @@ class ProcessLessonView(APIView):
 
             if not lesson.file_text:
                 return Response({"error": "No file associated with this lesson"}, status=status.HTTP_400_BAD_REQUEST)
-
-            rag_system_url = "http://127.0.0.1:8000/api/test-process/"
-
             
             payload = {"lesson_id": lesson.id}
             files = {"file": lesson.file_text}  
 
-            response = requests.post(rag_system_url, dat=payload, files=files)
+            response = requests.post(settings.RAG_SYSTEM_URL+"/upload", data=payload, files=files)
             print(response.status_code,"####################################")
             if response.status_code == 200:
                 lesson.processed = True

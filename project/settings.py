@@ -158,7 +158,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
 
 
-# rag_system_url = "http://127.0.0.1:8000/api/mock-process/"
+RAG_SYSTEM_URL = "http://127.0.0.1:8080"
 
 
 
@@ -167,3 +167,6 @@ CELERY_CACHE_BACKEND = 'default'
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  
 )
+
+#append slash 
+APPEND_SLASH = True

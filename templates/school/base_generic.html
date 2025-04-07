@@ -5,26 +5,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Student Dashboard{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+
     <header>
+        {% if request.resolver_match.url_name != "login" %}
         <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="{% url 'student_detail' %}">Student Details</a></li>
-            </ul>
+            <div class="nav-left">
+                <ul>
+                    {% if request.user.role == "teacher" %}
+                    <li><a href="{% url 'teacher-subjects' %}">Home</a></li>
+                    {% elif request.user.role == "student" %}
+                    <li><a href="{% url 'student_detail' %}">Home</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="nav-right">
+                <ul>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
         </nav>
+        {% endif %}
     </header>
 
     <main>
         {% block content %}
-        <!-- This will be overridden by child templates -->
         {% endblock %}
     </main>
 
     <footer>
         <p>&copy; 2025 My School Management System</p>
     </footer>
+
+    <!-- External JavaScript -->
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

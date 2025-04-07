@@ -1,0 +1,451 @@
+/* ===== Global Styles ===== */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+main {
+    padding: 2rem 1rem;
+    min-height: 70vh;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* ===== Header & Navigation ===== */
+header {
+    background-color: #004080;
+    padding: 1rem 2rem;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-left ul,
+.nav-right ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-left a,
+.nav-right a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.nav-right a:hover,
+.nav-left a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Footer ===== */
+footer {
+    background-color: #004080;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+}
+
+/* ===== Login Box ===== */
+.login-box {
+    max-width: 400px;
+    margin: 5vh auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    width: 90%;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #004080;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-box label {
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.login-box button {
+    padding: 0.7rem;
+    background-color: #004080;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.login-box button:hover {
+    background-color: #003060;
+}
+
+.error-msg {
+    color: red;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ===== Student Profile ===== */
+.profile-box {
+    max-width: 700px;
+    margin: 4rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.03);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.profile-header img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #004080;
+}
+
+.profile-details h1 {
+    margin: 0;
+    color: #004080;
+    font-size: 1.8rem;
+}
+
+.profile-details p {
+    margin: 0.3rem 0;
+    font-size: 1rem;
+}
+
+/* ===== Subject Detail Page ===== */
+.subject-detail-box {
+    max-width: 800px;
+    margin: 4rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.subject-detail-box h1 {
+    color: #004080;
+    margin-bottom: 1rem;
+}
+
+.subject-info p {
+    margin: 0.6rem 0;
+    font-size: 1rem;
+}
+
+.lessons-section {
+    margin-top: 2rem;
+}
+
+.lessons-section h2 {
+    color: #004080;
+    margin-bottom: 1rem;
+}
+
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.lesson-card {
+    display: block;
+    background-color: #fdfdfd;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    text-decoration: none;
+    color: #003366;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.lesson-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 64, 128, 0.2);
+    transform: translateY(-3px);
+}
+
+.lesson-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.lesson-card p {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* ===== Lesson Detail Page ===== */
+.lesson-detail-box {
+    max-width: 700px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.lesson-detail-box h1 {
+    color: #004080;
+    margin-bottom: 1.5rem;
+}
+
+.lesson-info p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0.6rem 0;
+}
+
+.lesson-files {
+    margin-top: 2rem;
+}
+
+.file-item {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.file-item audio,
+.file-item video {
+    margin-top: 0.5rem;
+    width: 100%;
+    border-radius: 6px;
+    background-color: #f1f1f1;
+    outline: none;
+}
+
+.file-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #004080;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.file-link:hover {
+    background-color: #003060;
+}
+
+.teacher-subjects-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.teacher-subjects-list li {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.teacher-subjects-list a {
+    color: #004080;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.2s;
+}
+
+.teacher-subjects-list a:hover {
+    border-bottom: 2px solid #004080;
+}
+
+/* ===== Create Lesson Page ===== */
+
+.form-container {
+    max-width: 700px;
+    margin: 4rem auto;
+    background-color: #fff;
+    padding: 2.5rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.03);
+}
+
+.form-container h2 {
+    margin-bottom: 2rem;
+    color: #004080;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #004080;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 64, 128, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    padding: 0.7rem 1.4rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: #004080;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #003060;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.lesson-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    nav a {
+        font-size: 1.1rem;
+    }
+
+    .login-box {
+        padding: 1.5rem;
+    }
+
+    .login-box input[type="email"],
+    .login-box input[type="password"] {
+        padding: 0.55rem;
+        font-size: 0.95rem;
+    }
+
+    .login-box button {
+        font-size: 0.95rem;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-details h1 {
+        font-size: 1.5rem;
+    }
+
+    .lesson-grid {
+        grid-template-columns: 1fr;
+    }
+}

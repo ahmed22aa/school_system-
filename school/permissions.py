@@ -3,6 +3,15 @@ from .models import Subject , Lesson
 from django.http import HttpResponseForbidden
 
 
+def check_Can_Create_Lesson(user ,subject_id):
+    subject = Subject.objects.filter(id=subject_id , teacher=user).first()
+    if user.role != 'teacher':
+        return HttpResponseForbidden("You do not have permission to view this page.")
+    if not subject:
+         return HttpResponseForbidden("You do not have permission to view this subject.")
+    return None
+
+    
 
 def check_user_permission(user, subject_id):
     

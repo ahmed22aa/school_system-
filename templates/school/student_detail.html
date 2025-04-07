@@ -1,19 +1,32 @@
-
 {% extends 'school/base_generic.html' %}
 
-{% block content %}
-  <h1>Student Details</h1>
-  
-  <p><strong>Name:</strong> {{ student.username }}</p>
-  <p><strong>Email:</strong> {{ student.email }}</p>
-  <p><strong>Grade:</strong> {{ grade.name }}</p>
+{% block title %}Student Profile{% endblock %}
 
-  <h2>Subjects for {{ grade.name }}:</h2>
-  <ul>
-    {% for subject in subjects %}
-      <li>{{ subject.name }} - {{ subject.description }}</li>
-    {% empty %}
-      <li>No subjects found for this grade.</li>
-    {% endfor %}
-  </ul>
+{% block content %}
+<div class="profile-box">
+    <div class="profile-header">
+        {% if student.profile_picture %}
+            <img src="{{ student.profile_picture.url }}" alt="Profile Picture">
+        {% endif %}
+        <div class="profile-details">
+            <h1>{{ student.username }}</h1>
+            <p><strong>Email:</strong> {{ student.email }}</p>
+            <p><strong>School ID:</strong> {{ student.school_id }}</p>
+            <p><strong>Grade:</strong> {{ grade.name }}</p>
+        </div>
+    </div>
+
+    <div class="subject-section">
+        <h2>Subjects for {{ grade.name }}:</h2>
+        <div class="subject-grid">
+            {% for subject in subjects %}
+                <a href="{% url 'subject_detail' subject.id %}" class="subject-card">
+                    <h3>{{ subject.name }}</h3>
+                </a>
+            {% empty %}
+                <p>No subjects found for this grade.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

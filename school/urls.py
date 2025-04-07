@@ -11,5 +11,5 @@ urlpatterns = [
     path("test-process/", testLessonView.as_view(), name="mock-process"),
     path('result/<str:task_id>/', get_result),
     path('add/', trigger_add),
-    path('trigger_speech/<int:pk>',trigger_speech_rec.as_view())
+    path('trigger_speech/<int:pk>/',trigger_speech_rec.as_view())
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Subject, CustomUser
+from .models import Subject, CustomUser, Lesson
 from django.contrib.auth.forms import AuthenticationForm
 class SubjectForm(forms.ModelForm):
     class Meta:
@@ -11,15 +11,19 @@ class SubjectForm(forms.ModelForm):
         self.fields['teacher'].queryset = CustomUser.objects.filter(role='teacher')
 
 
-
-
-
 class LoginForm(forms.Form):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'form-control',
-        'placeholder': 'Email',
-    }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control',
-        'placeholder': 'Password',
-    }))
+    username = forms.CharField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
+    )
+
+
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = [
+            'name', 'description', 'file_text', 'file_audio',
+            'video', 'subject', 'audio_file_transcribe'
+        ]

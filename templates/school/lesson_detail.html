@@ -1,20 +1,60 @@
 {% extends 'school/base_generic.html' %}
 
+{% block title %}{{ lesson.name }}{% endblock %}
+
 {% block content %}
-  <h1>{{ lesson.name }}</h1>
-  <p><strong>Description:</strong> {{ lesson.description }}</p>
-  <p><strong>Subject:</strong> {{ subject_name }}</p>
-  
-  {% if lesson.file_text %}
-    <p><strong>Text File:</strong> <a href="{{ lesson.file_text.url }}">Download</a></p>
-  {% endif %}
-  
-  {% if lesson.file_audio %}
-    <p><strong>Audio File:</strong> <a href="{{ lesson.file_audio.url }}">Download</a></p>
-  {% endif %}
-  
-  {% if lesson.video %}
-    <p><strong>Video:</strong> <a href="{{ lesson.video.url }}">Watch</a></p>
-  {% endif %}
-  
+<div class="lesson-detail-box">
+    <h1>{{ lesson.name }}</h1>
+
+    <div class="lesson-info">
+        <p><strong>Description:</strong></p>
+        <p>{{ lesson.description }}</p>
+        <p><strong>Subject:</strong> {{ subject_name }}</p>
+    </div>
+
+    <div class="lesson-files">
+        {% if lesson.file_text %}
+            <div class="file-item">
+                📄 <strong>Text File:</strong>
+                <a href="{{ lesson.file_text.url }}" class="file-link" download>Download</a>
+            </div>
+        {% endif %}
+
+        {% if lesson.file_audio %}
+            <div class="file-item">
+                🎧 <strong>Audio:</strong>
+                <audio controls>
+                    <source src="{{ lesson.file_audio.url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <a href="{{ lesson.file_audio.url }}" class="file-link" download>Download Audio</a>
+            </div>
+        {% endif %}
+
+        {% if lesson.video %}
+            <div class="file-item">
+                🎥 <strong>Video:</strong>
+                <video controls width="100%" height="auto">
+                    <source src="{{ lesson.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <a href="{{ lesson.video.url }}" class="file-link" download>Download Video</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if request.user.role == "teacher" %}
+        <div class="lesson-actions">
+
+            {% if not lesson.processed %}
+            <button class="btn btn-primary" id="process-btn" data-lesson-id="{{ lesson.id }}"> ⚙️ Process File</button>
+            {% endif %}
+
+            <form method="post" action="{% url 'delete_lesson' lesson.pk %}" onsubmit="return confirm('Are you sure you want to delete this lesson?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">🗑️ Delete Lesson</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -30,7 +30,7 @@ class SubjectAdmin(admin.ModelAdmin):
 admin.site.register(Subject, SubjectAdmin)  # ✅ Only once, using SubjectForm
 
 
-class CustomUserAdmin(UserAdmin):
+class BaseCustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
@@ -53,7 +53,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
 @admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(BaseCustomUserAdmin):
     change_list_template = "admin/customuser_changelist.html"
 
     def get_urls(self):
